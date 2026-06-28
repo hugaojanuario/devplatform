@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	"github.com/gin-gonic/gin"
-	"github.com/hugaojanuario/devplatform/internal/http"
+	"github.com/hugaojanuario/devplatform/internal/application"
 	"github.com/hugaojanuario/devplatform/internal/logger"
+	"github.com/hugaojanuario/devplatform/internal/server"
 	"github.com/hugaojanuario/devplatform/pkg/config"
 	database "github.com/hugaojanuario/devplatform/pkg/database/postgres"
 )
@@ -20,9 +20,12 @@ func main() {
 	}
 	defer db.Close()
 
-	r := gin.Default()
-	http.ApiRoutes(r)
-	r.Run(":" + cfg.Api.Port)
+	applicationRepository := application.NewRepository(db)
+	applicationService := application.NewService(applicationRepository)
+	appHandler := application.NewHandler(applicationService)
+
+	server := server.Server(appHandler)
+	server.Run()
 
 	logs.Info("API running")
 }

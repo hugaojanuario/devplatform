@@ -6,8 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ApiRoutes(r *gin.Engine) {
-	health := r.Group("health")
+func HealthRoutes(rg *gin.RouterGroup) {
+
+	health := rg.Group("/health")
 
 	health.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
