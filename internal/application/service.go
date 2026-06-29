@@ -16,6 +16,10 @@ func NewService(r ApplicationRepository) *Service {
 }
 
 func (s *Service) Create(ctx context.Context, req CreateApplication) (*Application, error) {
+	err := ValidateCreateApplication(req)
+	if err != nil {
+		return nil, err
+	}
 
 	app, err := s.r.Create(ctx, req)
 	if err != nil {
@@ -47,8 +51,47 @@ func (s *Service) FindByID(ctx context.Context, id uuid.UUID) (*Application, err
 	return app, nil
 }
 
-func (s *Service) Update(ctx context.Context, id uuid.UUID, req UpdateApplication) (*Application, error) {
-	app, err := s.r.Update(ctx, id, req)
+func (s *Service) Put(ctx context.Context, id uuid.UUID, req PutApplication) (*Application, error) {
+	err := ValidatePutApplication(req)
+	if err != nil {
+		return nil, err
+	}
+
+	app, err := s.r.Put(ctx, id, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return app, nil
+}
+
+func (s *Service) Patch(ctx context.Context, id uuid.UUID, req PatchApplication) (*Application, error) {
+	app, err := s.r.FindByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	if req.Name != nil {
+		app.Name = *req.Name
+	}
+
+	if req.Namespace != nil {
+		app.Namespace = *req.Namespace
+	}
+
+	if req.Image != nil {
+		app.Image = *req.Image
+	}
+
+	if req.Replicas != nil {
+		app.Replicas = *req.Replicas
+	}
+
+	if req.Port != nil {
+		app.Port = *req.Port
+	}
+
+	app, err = s.r.Patch(ctx, app)
 	if err != nil {
 		return nil, err
 	}

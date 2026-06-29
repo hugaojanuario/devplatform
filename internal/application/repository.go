@@ -12,8 +12,9 @@ type ApplicationRepository interface {
 	Create(ctx context.Context, req CreateApplication) (*Application, error)
 	FindAll(ctx context.Context) ([]Application, error)
 	FindByID(ctx context.Context, id uuid.UUID) (*Application, error)
-	Update(ctx context.Context, id uuid.UUID, req UpdateApplication) (*Application, error)
+	Put(ctx context.Context, id uuid.UUID, req PutApplication) (*Application, error)
 	Delete(ctx context.Context, id uuid.UUID) error
+	Patch(ctx context.Context, app *Application) (*Application, error)
 }
 
 type repository struct {
@@ -101,7 +102,7 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*Application, 
 	return application, nil
 }
 
-func (r *repository) Update(ctx context.Context, id uuid.UUID, req UpdateApplication) (*Application, error) {
+func (r *repository) Put(ctx context.Context, id uuid.UUID, req PutApplication) (*Application, error) {
 	query := `UPDATE applications SET name = $1, namespace = $2, image = $3, replicas = $4, port = $5, updated_at = NOW() WHERE id = $6 RETURNING id, name, namespace, image, replicas, port, created_at, updated_at`
 	application := &Application{}
 	err := r.db.QueryRowContext(ctx, query, req.Name, req.Namespace, req.Image, req.Replicas, req.Port, id).Scan(
@@ -137,4 +138,24 @@ func (r *repository) Delete(ctx context.Context, id uuid.UUID) error {
 	}
 
 	return nil
+}
+
+func (r *repository) Patch(ctx context.Context, app *Application) (*Application, error) {
+	query := `UPDATE applications SET id = $1, name = $2, namespace = $3, image = $4, replicas = $5, port = $6, updated_at = NOW() WHERE id = $7 RETURNING id, name, namespace, image, replicas, port, created_at, updated_at`
+	application := &Application{}
+	err := r.db.QueryRowContext(ctx, query, app.ID, app.Name, app.Namespace, app.Image, app.Replicas, app.Port, app.ID).Scan(
+		&application.ID,
+		&application.Name,
+		&application.Namespace,
+		&application.Image,
+		&application.Replicas,
+		&application.Port,
+		&application.CreatedAt,
+		&application.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return application, nil
 }

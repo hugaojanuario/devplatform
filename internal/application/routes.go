@@ -9,6 +9,7 @@ func ApplicationRoutes(rg *gin.RouterGroup, h *Handler) {
 	applications.GET("/", h.FindAll)
 	applications.GET("/:id", h.FindById)
 	applications.POST("/", h.Create)
-	applications.PUT("/:id", h.Update)
+	applications.PUT("/:id", h.Put)
+	applications.PATCH("/:id", h.Patch)
 	applications.DELETE("/:id", h.Delete)
 }

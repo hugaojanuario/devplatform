@@ -57,8 +57,8 @@ func (h *Handler) FindById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, app)
 }
 
-func (h *Handler) Update(ctx *gin.Context) {
-	var req UpdateApplication
+func (h *Handler) Put(ctx *gin.Context) {
+	var req PutApplication
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -70,7 +70,29 @@ func (h *Handler) Update(ctx *gin.Context) {
 		return
 	}
 
-	app, err := h.s.Update(ctx, id, req)
+	app, err := h.s.Put(ctx, id, req)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "id invalid"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, app)
+}
+
+func (h *Handler) Patch(ctx *gin.Context) {
+	var req PatchApplication
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	id, err := uuid.Parse(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id invalid"})
+		return
+	}
+
+	app, err := h.s.Patch(ctx, id, req)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "id invalid"})
 		return

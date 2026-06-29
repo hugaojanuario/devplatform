@@ -25,12 +25,20 @@ type CreateApplication struct {
 	Port      int    `json:"port"`
 }
 
-type UpdateApplication struct {
+type PutApplication struct {
 	Name      string `json:"name"`
 	Namespace string `json:"namespace"`
 	Image     string `json:"image"`
 	Replicas  int    `json:"replicas"`
 	Port      int    `json:"port"`
+}
+
+type PatchApplication struct {
+	Name      *string `json:"name"`
+	Namespace *string `json:"namespace"`
+	Image     *string `json:"image"`
+	Replicas  *int    `json:"replicas"`
+	Port      *int    `json:"port"`
 }
 
 type ApplicationResponse struct {
