@@ -5,6 +5,7 @@ import (
 	"database/sql"
 
 	"github.com/google/uuid"
+	"github.com/hugaojanuario/devplatform/internal/errs"
 )
 
 type ApplicationRepository interface {
@@ -132,7 +133,7 @@ func (r *repository) Delete(ctx context.Context, id uuid.UUID) error {
 		return err
 	}
 	if rowsAffected == 0 {
-		return sql.ErrNoRows // não encontrado
+		return errs.NotFound("Application") // não encontrado
 	}
 
 	return nil

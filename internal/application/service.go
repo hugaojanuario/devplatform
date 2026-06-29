@@ -2,9 +2,9 @@ package application
 
 import (
 	"context"
-	"errors"
 
 	"github.com/google/uuid"
+	"github.com/hugaojanuario/devplatform/internal/errs"
 )
 
 type Service struct {
@@ -41,7 +41,7 @@ func (s *Service) FindByID(ctx context.Context, id uuid.UUID) (*Application, err
 	}
 
 	if app == nil {
-		return nil, errors.New("application not found")
+		return nil, errs.NotFound("Application")
 	}
 
 	return app, nil
