@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hugaojanuario/devplatform/internal/application"
 	"github.com/hugaojanuario/devplatform/internal/http"
+	"github.com/hugaojanuario/devplatform/internal/k8s"
 )
 
 func Server(appHandler *application.Handler) *gin.Engine {
@@ -13,6 +14,7 @@ func Server(appHandler *application.Handler) *gin.Engine {
 
 	//HEALTH ROUTE
 	http.HealthRoutes(api)
+	k8s.KubernetesRoutes(api)
 
 	//APPLICATION ROUTES
 	application.ApplicationRoutes(api, appHandler)
